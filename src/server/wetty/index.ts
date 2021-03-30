@@ -24,7 +24,7 @@ export default function startWeTTy(
   command = '',
   forcessh = false,
   ssl?: SSL
-): Promise<void> {
+): Promise<IOSocket.Server> {
   return loadSSL(ssl).then((sslBuffer: SSLBuffer) => {
     if (ssh.key) {
       logger.warn(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -68,5 +68,6 @@ export default function startWeTTy(
           });
       }
     });
+    return io;
   });
 }
