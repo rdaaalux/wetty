@@ -68,7 +68,7 @@ export default [
         },
       ],
     },
-    plugins: [new webpack.IgnorePlugin(/uws/)],
+    plugins: [new webpack.IgnorePlugin({resourceRegExp: /uws/})],
   }),
   template({
     entry: entries('client', ['index']),
@@ -131,7 +131,22 @@ export default [
         filename: '[name].css',
         chunkFilename: '[id].css',
       }),
+      new webpack.NormalModuleReplacementPlugin(/node:/, (resource) => {
+        const mod = resource.request.replace(/^node:/, "");
+
+        switch(mod) {
+          case "buffer":
+            resource.request = "buffer";
+            break;
+          case "stream":
+            resource.request = "readable-stream";
+            break;
+          default:
+            throw new Error('Not found ${mod}');
+        }
+      }),
     ],
+    ignoreWarnings: [/Failed to parse source map/],
     devtool: 'source-map',
   }),
 ];
