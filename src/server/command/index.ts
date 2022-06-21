@@ -31,14 +31,14 @@ export default (
   args: !forcessh && localhost(host)
     ? loginOptions(command, remoteAddress)
     : sshOptions(
-        { ...urlArgs(referer, {
+        { ...urlArgs(referer?referer:"localhost", {
             port: `${port}`,
             pass: pass || '',
             command,
             auth,
             knownhosts,
           }),
-          host: address(referer, user, host)
+          host: address(referer?referer:"localhost", user, host)
         },
         key
       ),
@@ -46,5 +46,5 @@ export default (
     (!forcessh && localhost(host)) ||
     user !== '' ||
     user.includes('@') ||
-    address(referer, user, host).includes('@'),
+    address(referer?referer:"localhost", user, host).includes('@'),
 });
