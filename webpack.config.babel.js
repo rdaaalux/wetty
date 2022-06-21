@@ -9,6 +9,7 @@ const template = override => ({
   mode: process.env.NODE_ENV || 'development',
   resolve: {
     modules: [path.resolve(__dirname, 'src'), 'node_modules'],
+    fallback: {"buffer": false,},
     extensions: ['.ts', '.json', '.js', '.node'],
   },
 
