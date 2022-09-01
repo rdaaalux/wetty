@@ -55,24 +55,37 @@ export default function createServer(
   const client = html(base, title);
   app.get(basePath, client).get(`${basePath}/ssh/:user`, client);
 
+  var server = (!isUndefined(key) && !isUndefined(cert)
+    ? https.createServer({ key, cert }, app)
+    : http.createServer(app));
+
+  var crashed = false;
+
+  server.on('error', (e) => {
+    logger.info("Could not create server");
+    logger.info(e);
+    server.close();
+  });
+
   return socket(
     !isUndefined(key) && !isUndefined(cert)
-      ? https.createServer({ key, cert }, app).listen(port, host, () => {
-          logger.info('Server started', {
-            port,
-            connection: 'https',
-          });
-        })
-      : http.createServer(app).listen(port, host, () => {
-          logger.info('Server started', {
-            port,
-            connection: 'http',
-          });
-        }),
+      ? server.listen(port, host, () => {
+        logger.info('Server started', {
+          port,
+          connection: 'https',
+        });
+      })
+      : server.listen(port, host, () => {
+        logger.info('Server started', {
+          port,
+          connection: 'http',
+        });
+      }),
     {
       path: `${basePath}/socket.io`,
       pingInterval: 3000,
-      pingTimeout: 7000
+      pingTimeout: 7000,
+      crashed: crashed,
     }
   );
 }
